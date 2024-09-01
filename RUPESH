@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'BRANCH_NAME', defaultValue: 'develop', description: 'branch name')
+    }
+    stages {
+        stage('Code Checkout') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'GIT_TOKEN', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')])  {
+                        def gitUrl = "https://${GIT_USERNAME}:${GIT_PASSWORD}@https://github.com/Rupeshmishra19/jar-tomcat.git"
+                        git(
+                            url: gitUrl,
+                            branch: BRANCH_NAME
+                        )
+                    }
+                }                
+            }
+        } 
+        stage('JAR Build') {
+            steps {
+                script {
+                        sh "mvn install"
+                }
+            }
+        }        
+    }  
+}
